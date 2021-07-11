@@ -1,13 +1,15 @@
 package Iterator
 
+import "reflect"
+
 type Iterator interface {
 	HasNext() bool
 	Next() interface{}
-	Map(mapper Mapper) *MapStruct
-	Filter(predictor Predictor) *FilterStruct
+	Type() reflect.Type
+	Map(mapper interface{}) *MapIterator
+	Filter(predictor interface{}) *FilterIterator
 	Collect() interface{}
 	Count() int64
-	Repeat(times int64) *RepeatStruct
+	Repeat(times int64) *RepeatIterator
 	Copy() Iterator
-
 }

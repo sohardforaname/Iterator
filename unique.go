@@ -1,7 +1,6 @@
 package Iterator
 
-type UniqueStruct struct {
+type UniqueIterator struct {
 	buffer interface{}
-	Equal
 	Iterator
 }

@@ -1,9 +1,14 @@
 package Iterator
 
+import (
+	"reflect"
+)
+
 func Collect(iterator Iterator) interface{} {
-	slice := make([]interface{}, 0)
+	slice := reflect.New(reflect.SliceOf(iterator.Type())).Elem()
+
 	for iterator.HasNext() {
-		slice = append(slice, iterator.Next())
+		slice = reflect.Append(slice, reflect.ValueOf(iterator.Next()))
 	}
-	return slice
+	return slice.Interface()
 }

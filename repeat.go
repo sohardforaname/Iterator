@@ -1,11 +1,11 @@
 package Iterator
 
-type RepeatStruct struct {
+type RepeatIterator struct {
 	times int64
 	first Iterator
 	Iterator
 }
 
-func NewRepeatStruct(times int64, iterator Iterator) *RepeatStruct {
-	return &RepeatStruct{times, iterator.Copy(), iterator}
+func NewRepeatIterator(iterator Iterator, times int64) *RepeatIterator {
+	return &RepeatIterator{times, iterator.Copy(), iterator}
 }

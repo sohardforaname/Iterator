@@ -1,22 +1,48 @@
 package Iterator
 
-type MapStruct struct {
+import "reflect"
+
+type MapIterator struct {
 	Iterator
-	Mapper
+	mapper interface{}
 }
 
-func NewMapStruct(iterator Iterator, mapper Mapper) *MapStruct {
-	return &MapStruct{iterator, mapper}
+func NewMapIterator(iterator Iterator, mapper interface{}) *MapIterator {
+	return &MapIterator{iterator, mapper}
 }
 
-func (m *MapStruct) HasNext() bool {
+func (m *MapIterator) HasNext() bool {
 	return m.Iterator.HasNext()
 }
 
-func (m *MapStruct) Next() interface{} {
-	return m.Mapper(m.Iterator.Next())
+func (m *MapIterator) Next() interface{} {
+	return reflect.ValueOf(m.mapper).Call([]reflect.Value{reflect.ValueOf(m.Iterator.Next())})[0].Interface()
 }
 
-func (m *MapStruct) Collect() interface{} {
+func (m *MapIterator) Type() reflect.Type {
+	return reflect.TypeOf(m.mapper).Out(0)
+}
+
+func (m *MapIterator) Map(mapper interface{}) *MapIterator {
+	return NewMapIterator(m, mapper)
+}
+
+func (m *MapIterator) Filter(predictor interface{}) *FilterIterator {
+	return NewFilterIterator(m, predictor)
+}
+
+func (m *MapIterator) Collect() interface{} {
 	return Collect(m)
+}
+
+func (m *MapIterator) Count() int64 {
+	return Count(m)
+}
+
+func (m *MapIterator) Repeat(times int64) *RepeatIterator {
+	return NewRepeatIterator(m, times)
+}
+
+func (m *MapIterator) Copy() Iterator {
+	return &MapIterator{m.Iterator.Copy(), m.mapper}
 }

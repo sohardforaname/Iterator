@@ -1,6 +1,8 @@
 package Iterator
 
-import "reflect"
+import (
+	"reflect"
+)
 
 type base struct {
 	size, index int
@@ -12,13 +14,13 @@ type SliceIterator struct {
 }
 
 func OfSlice(s interface{}) *SliceIterator {
-	if reflect.TypeOf(s).Kind() != reflect.Slice {
+	t := reflect.TypeOf(s)
+	if t.Kind() != reflect.Slice {
 		panic("Not a slice")
 	}
-	v := reflect.ValueOf(s)
-	c := v.Len()
+	c := reflect.ValueOf(s).Len()
 	return &SliceIterator{
-		buf: v.Interface(),
+		buf: s,
 		base: &base{
 			index: 0,
 			size:  c,
@@ -36,12 +38,16 @@ func (s *SliceIterator) Next() interface{} {
 	return cur
 }
 
-func (s *SliceIterator) Map(mapper Mapper) *MapStruct {
-	return NewMapStruct(s, mapper)
+func (s *SliceIterator) Type() reflect.Type {
+	return reflect.TypeOf(s.buf).Elem()
 }
 
-func (s *SliceIterator) Filter(predictor Predictor) *FilterStruct {
-	return NewFilterStruct(s, predictor)
+func (s *SliceIterator) Map(mapper interface{}) *MapIterator {
+	return NewMapIterator(s, mapper)
+}
+
+func (s *SliceIterator) Filter(predictor interface{}) *FilterIterator {
+	return NewFilterIterator(s, predictor)
 }
 
 func (s *SliceIterator) Collect() interface{} {
@@ -52,8 +58,8 @@ func (s *SliceIterator) Count() int64 {
 	return Count(s)
 }
 
-func (s *SliceIterator) Repeat(times int64) *RepeatStruct {
-	return NewRepeatStruct(times, s)
+func (s *SliceIterator) Repeat(times int64) *RepeatIterator {
+	return NewRepeatIterator(s, times)
 }
 
 func (s *SliceIterator) Copy() Iterator {
