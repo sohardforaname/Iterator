@@ -1,4 +1,4 @@
-package Iterator
+package iter
 
 import "reflect"
 

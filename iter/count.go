@@ -1,4 +1,4 @@
-package Iterator
+package iter
 
 func Count(iterator Iterator) int64 {
 	cnt := int64(0)
